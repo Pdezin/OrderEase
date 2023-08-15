@@ -1,7 +1,8 @@
-﻿using Infrastructure.Contracts.Repositories;
-using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Infrastructure.Contracts.Repositories;
+using Infrastructure.Data;
+using Infrastructure.Helpers;
 
 namespace Infrastructure.Repositories
 {
@@ -39,12 +40,20 @@ namespace Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
-        public virtual async Task<ResultQuery<TEntity>> Query(Expression<Func<TEntity, bool>>? predicate = null, int page = 0, int pageSize = 0)
+        public virtual async Task<ResultQuery<TEntity>> Query(Expression<Func<TEntity, bool>>? predicate = null, int page = 0, int pageSize = 0, string orderBy = "", bool orderDesc = false)
         {
             var query = _dbSet.AsQueryable().AsNoTracking();
 
             if (predicate != null)
                 query = query.Where(predicate);
+
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                if (orderDesc)
+                    query = query.CustomOrderByDescending(orderBy);
+                else
+                    query = query.CustomOrderBy(orderBy);
+            }
 
             int total = 0;
 

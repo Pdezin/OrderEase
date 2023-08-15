@@ -1,4 +1,4 @@
-﻿using Domain.DTOs;
+﻿using Domain.DTOs.Categories;
 using Infrastructure.Entities;
 
 namespace Domain.Helpers
@@ -11,7 +11,6 @@ namespace Domain.Helpers
         {
             return new Category()
             {
-                Id = m.Id,
                 Name = m.Name
             };
         }
@@ -20,9 +19,9 @@ namespace Domain.Helpers
 
         #region To DTO
 
-        public static CategoryDTO MapToDTO(this Category m)
+        public static CategoryResultDTO MapToDTO(this Category m)
         {
-            return new CategoryDTO()
+            return new CategoryResultDTO()
             {
                 Id = m.Id,
                 Name = m.Name,
@@ -30,7 +29,7 @@ namespace Domain.Helpers
             };
         }
 
-        public static IEnumerable<CategoryDTO> MapToDTO(this IEnumerable<Category> m)
+        public static IEnumerable<CategoryResultDTO> MapToDTO(this IEnumerable<Category> m)
         {
             return m.Select(x => x.MapToDTO());
         }

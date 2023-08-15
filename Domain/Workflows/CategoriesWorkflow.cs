@@ -1,4 +1,4 @@
-﻿using Domain.DTOs;
+﻿using Domain.DTOs.Categories;
 using Domain.Helpers;
 using Infrastructure.Contracts.UoW;
 using Infrastructure.Entities;
@@ -16,16 +16,16 @@ namespace Domain.Workflows
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ResultQuery<CategoryDTO>> Get(string name, int page, int pageSize)
+        public async Task<ResultQuery<CategoryResultDTO>> Get(string name, int page, int pageSize)
         {
             var predicate = PredicateBuilder.New<Category>(true);
 
             if (!string.IsNullOrWhiteSpace(name))
                 predicate = predicate.And(x => x.Name.Contains(name));
 
-            var query = await _unitOfWork.Categories.Query(predicate, page, pageSize);
+            var query = await _unitOfWork.Categories.Query(predicate, page, pageSize, "Name");
 
-            return new ResultQuery<CategoryDTO>()
+            return new ResultQuery<CategoryResultDTO>()
             {
                 TotalRecords = query.TotalRecords,
                 Results = query.Results.MapToDTO()
@@ -36,14 +36,60 @@ namespace Domain.Workflows
         {
             var category = categoryDTO.MapToEntity();
 
-            var categoryExists = await _unitOfWork.Categories.Get(x => x.Name == categoryDTO.Name);
+            var categoryNameAlreadyExists = await _unitOfWork.Categories.Get(x => x.Name == categoryDTO.Name);
 
-            if (categoryExists.Any())
-                AddError("Name", "Category already exists", category.Name);
+            if (categoryNameAlreadyExists.Any())
+                AddError("Name", "Category name already exists", category.Name);
 
             if (IsValid)
             {
                 await _unitOfWork.Categories.Add(category);
+
+                await _unitOfWork.Commit();
+            }
+        }
+
+        public async Task Update(int id, CategoryDTO categoryDTO)
+        {
+            var category = await _unitOfWork.Categories.Find(id);
+
+            if (category == null)
+            {
+                AddError("Category", "Category not exists");
+                return;
+            }
+
+            var categoryNameAlreadyExists = await _unitOfWork.Categories.Get(x => x.Id != id && x.Name == categoryDTO.Name);
+
+            if (categoryNameAlreadyExists.Any())
+                AddError("Name", "Category name already exists", category.Name);
+
+            if (IsValid)
+            {
+                category.Name = categoryDTO.Name;
+
+                _unitOfWork.Categories.Update(category);
+
+                await _unitOfWork.Commit();
+            }
+        }
+
+        public async Task Delete(int id)
+        {
+            var category = await _unitOfWork.Categories.Find(id);
+
+            if (category == null)
+            {
+                AddError("Category", "Category not exists");
+                return;
+            }
+
+            if (category.Products.Count > 0)
+                AddError("Category", "There are products using this category");
+            
+            if (IsValid)
+            {
+                _unitOfWork.Categories.Remove(category);
 
                 await _unitOfWork.Commit();
             }

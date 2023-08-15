@@ -1,11 +1,12 @@
-﻿using Domain.DTOs;
+﻿using Domain.DTOs.Categories;
 using Domain.Workflows;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class CategoriesController : ControllerBase
     {
         private readonly CategoriesWorkflow _categoriesWorkflow;
@@ -29,6 +30,31 @@ namespace API.Controllers
         public async Task<IActionResult> Post([FromBody] CategoryDTO categoryDto)
         {
             await _categoriesWorkflow.Add(categoryDto);
+
+            if (_categoriesWorkflow.IsValid)
+                return Ok();
+
+            return BadRequest(_categoriesWorkflow.Errors);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> Put([FromRoute] int id,
+                                             [FromBody] CategoryDTO categoryDto)
+        {
+            await _categoriesWorkflow.Update(id, categoryDto);
+
+            if (_categoriesWorkflow.IsValid)
+                return Ok();
+
+            return BadRequest(_categoriesWorkflow.Errors);
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            await _categoriesWorkflow.Delete(id);
 
             if (_categoriesWorkflow.IsValid)
                 return Ok();
