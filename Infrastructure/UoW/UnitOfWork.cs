@@ -14,11 +14,13 @@ namespace Infrastructure.UoW
         {
             _context = context;
             Categories = new CategoriesRepository(_context);
+            Roles = new RolesRepository(_context);
         }
 
         #region Repositories
 
         public ICategoriesRepository Categories { get; private set; }
+        public IRolesRepository Roles { get; private set; }
 
         #endregion
 

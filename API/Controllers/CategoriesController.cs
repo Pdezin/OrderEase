@@ -27,9 +27,9 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CategoryDTO categoryDto)
+        public async Task<IActionResult> Post([FromBody] CategoryDTO categoryDTO)
         {
-            await _categoriesWorkflow.Add(categoryDto);
+            await _categoriesWorkflow.Add(categoryDTO);
 
             if (_categoriesWorkflow.IsValid)
                 return Ok();
@@ -40,9 +40,9 @@ namespace API.Controllers
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> Put([FromRoute] int id,
-                                             [FromBody] CategoryDTO categoryDto)
+                                             [FromBody] CategoryDTO categoryDTO)
         {
-            await _categoriesWorkflow.Update(id, categoryDto);
+            await _categoriesWorkflow.Update(id, categoryDTO);
 
             if (_categoriesWorkflow.IsValid)
                 return Ok();

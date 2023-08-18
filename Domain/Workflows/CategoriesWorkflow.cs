@@ -34,15 +34,18 @@ namespace Domain.Workflows
 
         public async Task Add(CategoryDTO categoryDTO)
         {
-            var category = categoryDTO.MapToEntity();
+            if (categoryDTO.Name.Length > 100)
+                AddError("Name", "Category name cannot be longer than 100 characters", categoryDTO.Name);
 
             var categoryNameAlreadyExists = await _unitOfWork.Categories.Get(x => x.Name == categoryDTO.Name);
 
             if (categoryNameAlreadyExists.Any())
-                AddError("Name", "Category name already exists", category.Name);
+                AddError("Name", "Category name already exists", categoryDTO.Name);
 
             if (IsValid)
             {
+                var category = categoryDTO.MapToEntity();
+
                 await _unitOfWork.Categories.Add(category);
 
                 await _unitOfWork.Commit();
@@ -59,10 +62,13 @@ namespace Domain.Workflows
                 return;
             }
 
+            if (categoryDTO.Name.Length > 100)
+                AddError("Name", "Category name cannot be longer than 100 characters", categoryDTO.Name);
+
             var categoryNameAlreadyExists = await _unitOfWork.Categories.Get(x => x.Id != id && x.Name == categoryDTO.Name);
 
             if (categoryNameAlreadyExists.Any())
-                AddError("Name", "Category name already exists", category.Name);
+                AddError("Name", "Category name already exists", categoryDTO.Name);
 
             if (IsValid)
             {

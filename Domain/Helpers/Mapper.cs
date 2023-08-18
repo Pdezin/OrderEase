@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs.Categories;
+using Domain.DTOs.Roles;
 using Infrastructure.Entities;
 
 namespace Domain.Helpers
@@ -12,6 +13,17 @@ namespace Domain.Helpers
             return new Category()
             {
                 Name = m.Name
+            };
+        }
+
+        public static Role MapToEntity(this RoleDTO m)
+        {
+            return new Role()
+            {
+                Name = m.Name,
+                OrderAccess = m.OrderAccess,
+                ProductAccess = m.ProductAccess,
+                UserAccess = m.UserAccess
             };
         }
 
@@ -30,6 +42,24 @@ namespace Domain.Helpers
         }
 
         public static IEnumerable<CategoryResultDTO> MapToDTO(this IEnumerable<Category> m)
+        {
+            return m.Select(x => x.MapToDTO());
+        }
+
+        public static RoleResultDTO MapToDTO(this Role m)
+        {
+            return new RoleResultDTO()
+            {
+                Id = m.Id,
+                Name = m.Name,
+                OrderAccess = m.OrderAccess,
+                ProductAccess = m.ProductAccess,
+                UserAccess = m.UserAccess,
+                CreatedAt = m.CreatedAt
+            };
+        }
+
+        public static IEnumerable<RoleResultDTO> MapToDTO(this IEnumerable<Role> m)
         {
             return m.Select(x => x.MapToDTO());
         }

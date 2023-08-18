@@ -2,6 +2,7 @@ using Domain.Workflows;
 using Infrastructure.Contracts.UoW;
 using Infrastructure.Data;
 using Infrastructure.UoW;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -16,6 +17,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Workflows
 builder.Services.AddScoped(typeof(CategoriesWorkflow));
+builder.Services.AddScoped(typeof(RolesWorkflow));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -41,20 +43,34 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-if (!app.Environment.IsDevelopment())
+
+app.UseExceptionHandler(exceptionHandlerApp =>
 {
-    app.UseExceptionHandler(exceptionHandlerApp =>
+    exceptionHandlerApp.Run(async context =>
     {
-        exceptionHandlerApp.Run(async context =>
+        if (!app.Environment.IsDevelopment())
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
             context.Response.ContentType = Text.Plain;
 
-            await context.Response.WriteAsync("An exception was thrown.");
-        });
+            await context.Response.WriteAsync("An error occurred.");
+            return;
+        }
+        
+        var exception = context.Features.Get<IExceptionHandlerFeature>();
+
+        string erro = $"StatusCode: {context.Response.StatusCode}\n";
+        string additionalInfo = "";
+
+        if (exception != null)
+        {
+            erro += exception?.Error.Message ?? "";
+            additionalInfo = exception?.Error.StackTrace ?? "";
+        }
+
+        await context.Response.WriteAsync($"{erro}\n{additionalInfo}");
     });
-}
+});
 
 app.UseHttpsRedirection();
 
