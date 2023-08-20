@@ -21,6 +21,9 @@ namespace Infrastructure.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
+        [Column("active")]
+        public bool Active { get; set; }
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 

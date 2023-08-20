@@ -29,10 +29,10 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CategoryDTO categoryDTO)
         {
-            await _categoriesWorkflow.Add(categoryDTO);
+            var result = await _categoriesWorkflow.Add(categoryDTO);
 
             if (_categoriesWorkflow.IsValid)
-                return Ok();
+                return StatusCode(StatusCodes.Status201Created, result);
 
             return BadRequest(_categoriesWorkflow.Errors);
         }
@@ -45,7 +45,10 @@ namespace API.Controllers
             await _categoriesWorkflow.Update(id, categoryDTO);
 
             if (_categoriesWorkflow.IsValid)
-                return Ok();
+                return NoContent();
+
+            if (_categoriesWorkflow.IsNotFound)
+                return NotFound(_categoriesWorkflow.Errors);
 
             return BadRequest(_categoriesWorkflow.Errors);
         }
@@ -57,7 +60,10 @@ namespace API.Controllers
             await _categoriesWorkflow.Delete(id);
 
             if (_categoriesWorkflow.IsValid)
-                return Ok();
+                return NoContent();
+
+            if (_categoriesWorkflow.IsNotFound)
+                return NotFound(_categoriesWorkflow.Errors);
 
             return BadRequest(_categoriesWorkflow.Errors);
         }

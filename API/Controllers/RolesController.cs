@@ -29,10 +29,10 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] RoleDTO roleDTO)
         {
-            await _rolesWorkflow.Add(roleDTO);
+            var result = await _rolesWorkflow.Add(roleDTO);
 
             if (_rolesWorkflow.IsValid)
-                return Ok();
+                return StatusCode(StatusCodes.Status201Created, result);
 
             return BadRequest(_rolesWorkflow.Errors);
         }
@@ -45,7 +45,10 @@ namespace API.Controllers
             await _rolesWorkflow.Update(id, roleDTO);
 
             if (_rolesWorkflow.IsValid)
-                return Ok();
+                return NoContent();
+
+            if (_rolesWorkflow.IsNotFound)
+                return NotFound(_rolesWorkflow.Errors);
 
             return BadRequest(_rolesWorkflow.Errors);
         }
@@ -57,7 +60,10 @@ namespace API.Controllers
             await _rolesWorkflow.Delete(id);
 
             if (_rolesWorkflow.IsValid)
-                return Ok();
+                return NoContent();
+
+            if (_rolesWorkflow.IsNotFound)
+                return NotFound(_rolesWorkflow.Errors);
 
             return BadRequest(_rolesWorkflow.Errors);
         }

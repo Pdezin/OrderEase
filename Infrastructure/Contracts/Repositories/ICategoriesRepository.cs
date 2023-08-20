@@ -1,4 +1,5 @@
-﻿using Infrastructure.Entities;
+﻿using Infrastructure.Contracts.Repositories.Base;
+using Infrastructure.Entities;
 
 namespace Infrastructure.Contracts.Repositories
 {

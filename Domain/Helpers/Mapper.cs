@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs.Categories;
+using Domain.DTOs.PriceLists;
 using Domain.DTOs.Roles;
 using Infrastructure.Entities;
 
@@ -27,6 +28,15 @@ namespace Domain.Helpers
             };
         }
 
+        public static PriceList MapToEntity(this PriceListsDTO m)
+        {
+            return new PriceList()
+            {
+                Name = m.Name,
+                Active = m.Active,
+            };
+        }
+
         #endregion
 
         #region To DTO
@@ -39,11 +49,6 @@ namespace Domain.Helpers
                 Name = m.Name,
                 CreatedAt = m.CreatedAt
             };
-        }
-
-        public static IEnumerable<CategoryResultDTO> MapToDTO(this IEnumerable<Category> m)
-        {
-            return m.Select(x => x.MapToDTO());
         }
 
         public static RoleResultDTO MapToDTO(this Role m)
@@ -59,9 +64,26 @@ namespace Domain.Helpers
             };
         }
 
-        public static IEnumerable<RoleResultDTO> MapToDTO(this IEnumerable<Role> m)
+        public static PriceListsResultDTO MapToDTO(this PriceList m)
         {
-            return m.Select(x => x.MapToDTO());
+            return new PriceListsResultDTO()
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Active = m.Active,
+                CreatedAt = m.CreatedAt
+            };
+        }
+
+        public static IEnumerable<DTO> MapToListDTO<DTO, ENTITY>(IEnumerable<ENTITY> m)
+        {
+            var parameterTypes = new Type[] { typeof(ENTITY) };
+            var staticMethod = typeof(Mapper).GetMethod("MapToDTO", parameterTypes);
+
+            if (staticMethod != null)
+                return m.Select(x => (DTO)staticMethod.Invoke(null, new object[] { x }));
+
+            return Enumerable.Empty<DTO>();
         }
 
         #endregion

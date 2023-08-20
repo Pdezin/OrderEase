@@ -11,6 +11,7 @@
 
         public List<Error> Errors => _errors;
         public bool IsValid => _errors.Count == 0;
+        public bool IsNotFound { get; private set; }
 
         public void AddErrors(List<Error> errors)
         {
@@ -25,6 +26,12 @@
         public void AddError(string property, string message, object? value = null)
         {
             _errors.Add(new Error(property, message, value));
+        }
+
+        public void NotFound(string property, string message)
+        {
+            IsNotFound = true;
+            _errors.Add(new Error(property, message, null));
         }
     }
 }

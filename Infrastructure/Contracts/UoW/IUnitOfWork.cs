@@ -7,5 +7,6 @@ namespace Infrastructure.Contracts.UoW
         Task Commit();
         ICategoriesRepository Categories { get; }
         IRolesRepository Roles { get; }
+        IPriceListsRepository PriceLists { get; }
     }
 }

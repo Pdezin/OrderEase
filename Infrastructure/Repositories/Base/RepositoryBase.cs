@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using Infrastructure.Contracts.Repositories;
 using Infrastructure.Data;
 using Infrastructure.Helpers;
+using Infrastructure.Contracts.Repositories.Base;
 
-namespace Infrastructure.Repositories
+namespace Infrastructure.Repositories.Base
 {
     public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : class
     {
@@ -40,7 +40,7 @@ namespace Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
-        public virtual async Task<ResultQuery<TEntity>> Query(Expression<Func<TEntity, bool>>? predicate = null, int page = 0, int pageSize = 0, string orderBy = "", bool orderDesc = false)
+        public virtual async Task<QueryResult<TEntity>> Query(Expression<Func<TEntity, bool>>? predicate = null, int page = 0, int pageSize = 0, string orderBy = "", bool orderDesc = false)
         {
             var query = _dbSet.AsQueryable().AsNoTracking();
 
@@ -69,7 +69,7 @@ namespace Infrastructure.Repositories
 
             var results = await query.ToListAsync();
 
-            return new ResultQuery<TEntity> { Results = results, TotalRecords = total };
+            return new QueryResult<TEntity> { Results = results, TotalRecords = total };
         }
 
         public virtual void Remove(TEntity entity)

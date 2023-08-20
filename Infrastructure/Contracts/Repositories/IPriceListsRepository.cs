@@ -3,7 +3,7 @@ using Infrastructure.Entities;
 
 namespace Infrastructure.Contracts.Repositories
 {
-    public interface IRolesRepository : IRepositoryBase<Role>
+    public interface IPriceListsRepository : IRepositoryBase<PriceList>
     {
     }
 }

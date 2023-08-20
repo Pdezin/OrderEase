@@ -5,9 +5,9 @@ using Infrastructure.Repositories.Base;
 
 namespace Infrastructure.Repositories
 {
-    public class CategoriesRepository : RepositoryBase<Category>, ICategoriesRepository
+    public class PriceListsRepository : RepositoryBase<PriceList>, IPriceListsRepository
     {
-        public CategoriesRepository(DataContext context) : base(context)
+        public PriceListsRepository(DataContext context) : base(context)
         {
         }
     }

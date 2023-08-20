@@ -15,6 +15,9 @@ namespace Infrastructure.Entities
         [Column("id")]
         public int Id { get; set; }
 
+        [Column("status")]
+        public Status Status { get; set; }
+
         [Column("total")]
         public decimal Total { get; set; }
 
@@ -41,6 +44,14 @@ namespace Infrastructure.Entities
         public Customer Customer { get; set; }
         public CustomerAddress CustomerAddress { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
+    }
+
+    public enum Status
+    {
+        Open = 1,
+        Confirmed = 2,
+        Canceled = 3,
+        Completed = 4
     }
 
     public class OrderMap : IEntityTypeConfiguration<Order>

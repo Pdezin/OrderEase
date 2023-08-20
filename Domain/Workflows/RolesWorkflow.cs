@@ -1,8 +1,9 @@
 ﻿using Domain.DTOs.Roles;
 using Domain.Helpers;
+using Domain.Workflows.Base;
 using Infrastructure.Contracts.UoW;
 using Infrastructure.Entities;
-using Infrastructure.Repositories;
+using Infrastructure.Repositories.Base;
 using LinqKit;
 
 namespace Domain.Workflows
@@ -16,7 +17,7 @@ namespace Domain.Workflows
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ResultQuery<RoleResultDTO>> Get(string name, int page, int pageSize)
+        public async Task<QueryResult<RoleResultDTO>> Get(string name, int page, int pageSize)
         {
             var predicate = PredicateBuilder.New<Role>(true);
 
@@ -25,31 +26,29 @@ namespace Domain.Workflows
 
             var query = await _unitOfWork.Roles.Query(predicate, page, pageSize, "Name");
 
-            return new ResultQuery<RoleResultDTO>()
+            var teste = Mapper.MapToListDTO<RoleResultDTO, Role>(query.Results);
+
+            return new QueryResult<RoleResultDTO>()
             {
                 TotalRecords = query.TotalRecords,
-                Results = query.Results.MapToDTO()
+                Results = teste
             };
         }
 
-        public async Task Add(RoleDTO roleDTO)
+        public async Task<RoleResultDTO?> Add(RoleDTO roleDTO)
         {
-            if (roleDTO.Name.Length > 100)
-                AddError("Name", "Role name cannot be longer than 100 characters", roleDTO.Name);
+            await DataValidator(roleDTO);
 
-            var roleNameAlreadyExists = await _unitOfWork.Roles.Get(x => x.Name == roleDTO.Name);
+            if (!IsValid)
+                return null;
 
-            if (roleNameAlreadyExists.Any())
-                AddError("Name", "Role name already exists", roleDTO.Name);
+            var role = roleDTO.MapToEntity();
 
-            if (IsValid)
-            {
-                var role = roleDTO.MapToEntity();
+            await _unitOfWork.Roles.Add(role);
 
-                await _unitOfWork.Roles.Add(role);
+            await _unitOfWork.Commit();
 
-                await _unitOfWork.Commit();
-            }
+            return role.MapToDTO();
         }
 
         public async Task Update(int id, RoleDTO roleDTO)
@@ -58,17 +57,11 @@ namespace Domain.Workflows
 
             if (role == null)
             {
-                AddError("Role", "Role not exists");
+                NotFound("Role", "Role not exists");
                 return;
             }
 
-            if (roleDTO.Name.Length > 100)
-                AddError("Name", "Role name cannot be longer than 100 characters", roleDTO.Name);
-
-            var roleNameAlreadyExists = await _unitOfWork.Roles.Get(x => x.Id != id && x.Name == roleDTO.Name);
-
-            if (roleNameAlreadyExists.Any())
-                AddError("Name", "Role name already exists", roleDTO.Name);
+            await DataValidator(roleDTO, id);
 
             if (IsValid)
             {
@@ -89,7 +82,7 @@ namespace Domain.Workflows
 
             if (role == null)
             {
-                AddError("Role", "Role not exists");
+                NotFound("Role", "Role not exists");
                 return;
             }
 
@@ -102,6 +95,29 @@ namespace Domain.Workflows
 
                 await _unitOfWork.Commit();
             }
+        }
+
+        private async Task DataValidator(RoleDTO roleDTO, int id = 0)
+        {
+            if (roleDTO.UserAccess <= 0)
+                AddError("UserAccess", "User Access is required", roleDTO.UserAccess);
+
+            if (roleDTO.ProductAccess <= 0)
+                AddError("ProductAccess", "Product Access is required", roleDTO.ProductAccess);
+
+            if (roleDTO.OrderAccess <= 0)
+                AddError("OrderAccess", "Order Access is required", roleDTO.OrderAccess);
+
+            if (string.IsNullOrWhiteSpace(roleDTO.Name))
+                AddError("Name", "Name is required", roleDTO.Name);
+
+            if (roleDTO.Name.Length > 100)
+                AddError("Name", "Role name cannot be longer than 100 characters", roleDTO.Name);
+
+            var roleNameAlreadyExists = await _unitOfWork.Roles.Get(x => x.Id != id && x.Name == roleDTO.Name);
+
+            if (roleNameAlreadyExists.Any())
+                AddError("Name", "Role name already exists", roleDTO.Name);
         }
     }
 }
