@@ -17,6 +17,7 @@ namespace Infrastructure.UoW
             Roles = new RolesRepository(_context);
             PriceLists = new PriceListsRepository(_context);
             Users = new UsersRepository(_context);
+            Products = new ProductsRepository(_context);
         }
 
         #region Repositories
@@ -25,6 +26,7 @@ namespace Infrastructure.UoW
         public IRolesRepository Roles { get; private set; }
         public IPriceListsRepository PriceLists { get; private set; }
         public IUsersRepository Users { get; private set; }
+        public IProductsRepository Products { get; set; }
 
         #endregion
 

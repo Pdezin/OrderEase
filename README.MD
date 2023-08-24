@@ -56,10 +56,12 @@ Table products {
   id int [primary key]
   name varchar
   description varchar
+  unit varchar
   weight decimal
   height decimal
   width decimal
   length decimal
+  stock decimal
   categories_id int
   active bit
   updated_at timestamp

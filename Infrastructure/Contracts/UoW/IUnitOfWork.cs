@@ -9,5 +9,6 @@ namespace Infrastructure.Contracts.UoW
         IRolesRepository Roles { get; }
         IPriceListsRepository PriceLists { get; }
         IUsersRepository Users { get; }
+        IProductsRepository Products { get; }
     }
 }

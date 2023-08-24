@@ -26,6 +26,10 @@ namespace Infrastructure.Entities
         [MaxLength(2000)]
         public string Description { get; set; }
 
+        [Column("unit")]
+        [MaxLength(3)]
+        public string Unit { get; set; }
+
         [Column("weight")]
         public decimal Weight { get; set; }
 
@@ -37,6 +41,9 @@ namespace Infrastructure.Entities
 
         [Column("length")]
         public decimal Length { get; set; }
+
+        [Column("stock")]
+        public decimal Stock { get; set; }
 
         [Column("active")]
         public bool Active { get; set; }

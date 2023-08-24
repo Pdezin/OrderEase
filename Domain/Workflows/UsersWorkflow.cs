@@ -47,6 +47,8 @@ namespace Domain.Workflows
                 return null;
             }
 
+            user.Role = await _unitOfWork.Roles.Find(user.RoleId);
+
             return user.MapToDetailDTO();
         }
 

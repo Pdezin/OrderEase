@@ -1,5 +1,6 @@
 ﻿using Domain.DTOs.Categories;
 using Domain.DTOs.PriceLists;
+using Domain.DTOs.Products;
 using Domain.DTOs.Roles;
 using Domain.DTOs.Use;
 using Domain.DTOs.Users;
@@ -52,6 +53,23 @@ namespace Domain.Helpers
             };
         }
 
+        public static Product MapToEntity(this ProductDTO m)
+        {
+            return new Product()
+            {
+                Name = m.Name,
+                Description = m.Description,
+                Unit = m.Unit,
+                Stock = m.Stock,
+                Width = m.Width,
+                Height = m.Height,
+                Length = m.Length,
+                Weight = m.Weight,
+                CategoryId = m.CategoryId,
+                Active = m.Active
+            };
+        }
+
         #endregion
 
         #region To DTO
@@ -97,6 +115,20 @@ namespace Domain.Helpers
             };
         }
 
+        public static ProductResultDTO MapToDTO(this Product m)
+        {
+            return new ProductResultDTO()
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Stock = m.Stock,
+                Unit = m.Unit,
+                Category = m.Category.Name,
+                CategoryId = m.CategoryId,
+                Active = m.Active
+            };
+        }
+
         public static IEnumerable<DTO> MapToListDTO<DTO, ENTITY>(IEnumerable<ENTITY> m)
         {
             var parameterTypes = new Type[] { typeof(ENTITY) };
@@ -120,7 +152,29 @@ namespace Domain.Helpers
                 Name = m.Name,
                 Email = m.Email,
                 RoleId = m.RoleId,
+                Role = m.Role.Name,
                 BirthDate = m.BirthDate?.ToStringDateTime() ?? "",
+                CreatedAt = m.CreatedAt.ToStringDateTime(),
+                UpdatedAt = m.UpdatedAt.ToStringDateTime(),
+                Active = m.Active
+            };
+        }
+
+        public static ProductResultDetailDTO MapToDetailDTO(this Product m)
+        {
+            return new ProductResultDetailDTO()
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Description = m.Description,
+                Stock = m.Stock,
+                Unit = m.Unit,
+                Height = m.Height,
+                Length = m.Length,
+                Weight = m.Weight,
+                Width = m.Width,
+                Category = m.Category.Name,
+                CategoryId = m.CategoryId,
                 CreatedAt = m.CreatedAt.ToStringDateTime(),
                 UpdatedAt = m.UpdatedAt.ToStringDateTime(),
                 Active = m.Active
