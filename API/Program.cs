@@ -19,6 +19,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(CategoriesWorkflow));
 builder.Services.AddScoped(typeof(RolesWorkflow));
 builder.Services.AddScoped(typeof(PriceListsWorkflow));
+builder.Services.AddScoped(typeof(UsersWorkflow));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

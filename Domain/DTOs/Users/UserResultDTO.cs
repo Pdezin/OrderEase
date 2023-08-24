@@ -1,6 +1,6 @@
-﻿namespace Domain.DTOs.PriceLists
+﻿namespace Domain.DTOs.Users
 {
-    public class PriceListsResultDTO
+    public class UserResultDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

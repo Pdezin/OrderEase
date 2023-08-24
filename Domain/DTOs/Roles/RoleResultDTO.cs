@@ -9,6 +9,5 @@ namespace Domain.DTOs.Roles
         public AccessType OrderAccess { get; set; }
         public AccessType ProductAccess { get; set; }
         public AccessType UserAccess { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }

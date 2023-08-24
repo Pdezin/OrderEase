@@ -8,5 +8,6 @@ namespace Infrastructure.Contracts.UoW
         ICategoriesRepository Categories { get; }
         IRolesRepository Roles { get; }
         IPriceListsRepository PriceLists { get; }
+        IUsersRepository Users { get; }
     }
 }

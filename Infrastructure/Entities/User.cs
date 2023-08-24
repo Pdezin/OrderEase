@@ -29,7 +29,7 @@ namespace Infrastructure.Entities
         public string Name { get; set; }
 
         [Column("birth_date")]
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
         [Column("active")]
         public bool Active { get; set; }
