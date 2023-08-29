@@ -18,17 +18,28 @@ namespace Domain.Workflows
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<QueryResult<UserResultDTO>> Get(string name, bool? active, int page, int pageSize)
+        public async Task<QueryResult<UserResultDTO>> Get(string term, bool? active, int page, int pageSize)
         {
             var predicate = PredicateBuilder.New<User>(true);
 
-            if (!string.IsNullOrWhiteSpace(name))
-                predicate = predicate.And(x => x.Name.Contains(name));
+            if (!string.IsNullOrWhiteSpace(term))
+            {
+                var predicateTerm = PredicateBuilder.New<User>(false);
+
+                if (term.ToInt() > 0)
+                    predicateTerm = predicateTerm.Or(x => x.Id == term.ToInt());
+
+                predicateTerm = predicateTerm.Or(x => x.Name.Contains(term));
+                predicateTerm = predicateTerm.Or(x => x.Email.Contains(term));
+                predicateTerm = predicateTerm.Or(x => x.Role.Name.Contains(term));
+
+                predicate = predicate.And(predicateTerm);
+            }
 
             if (active != null)
                 predicate = predicate.And(x => x.Active == active);
 
-            var query = await _unitOfWork.Users.Query(predicate, page, pageSize, "Name");
+            var query = await _unitOfWork.Users.Query(predicate, nameof(User.Role), page, pageSize, nameof(User.Name));
 
             return new QueryResult<UserResultDTO>()
             {
@@ -39,15 +50,13 @@ namespace Domain.Workflows
 
         public async Task<UserResultDetailDTO?> Detail(int id)
         {
-            var user = await _unitOfWork.Users.Find(id);
+            var user = await _unitOfWork.Users.Find(x => x.Id == id, nameof(User.Role));
 
             if (user == null)
             {
                 NotFound("User", "User not exists");
                 return null;
             }
-
-            user.Role = await _unitOfWork.Roles.Find(user.RoleId);
 
             return user.MapToDetailDTO();
         }

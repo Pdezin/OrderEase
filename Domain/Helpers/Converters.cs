@@ -21,5 +21,15 @@
         {
             return dateTime.ToString(format);
         }
+
+        public static int ToInt(this string stringNumber)
+        {
+            var isNumeric = int.TryParse(stringNumber, out int n);
+
+            if (isNumeric)
+                return n;
+
+            return 0;
+        }
     }
 }

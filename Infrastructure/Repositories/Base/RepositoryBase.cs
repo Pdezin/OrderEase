@@ -30,6 +30,17 @@ namespace Infrastructure.Repositories.Base
             return await _dbSet.FindAsync(id);
         }
 
+        public virtual async Task<TEntity?> Find(Expression<Func<TEntity, bool>> predicate, string includes = "")
+        {
+            var query = _dbSet.AsQueryable().AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(includes))
+                foreach (var property in includes.Split(","))
+                    query = query.Include(property.Trim());
+
+            return await query.FirstOrDefaultAsync(predicate);
+        }
+
         public virtual async Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>>? predicate = null)
         {
             var query = _dbSet.AsQueryable().AsNoTracking();
@@ -42,7 +53,16 @@ namespace Infrastructure.Repositories.Base
 
         public virtual async Task<QueryResult<TEntity>> Query(Expression<Func<TEntity, bool>>? predicate = null, int page = 0, int pageSize = 0, string orderBy = "", bool orderDesc = false)
         {
+            return await Query(predicate, "", page, pageSize, orderBy, orderDesc);
+        }
+
+        public virtual async Task<QueryResult<TEntity>> Query(Expression<Func<TEntity, bool>>? predicate = null, string includes = "", int page = 0, int pageSize = 0, string orderBy = "", bool orderDesc = false)
+        {
             var query = _dbSet.AsQueryable().AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(includes))
+                foreach (var property in includes.Split(","))
+                    query = query.Include(property.Trim());
 
             if (predicate != null)
                 query = query.Where(predicate);

@@ -1,4 +1,6 @@
-﻿namespace Domain.DTOs.Products
+﻿using Domain.DTOs.ProductPrices;
+
+namespace Domain.DTOs.Products
 {
     public class ProductDTO
     {
@@ -12,5 +14,6 @@
         public decimal Stock { get; set; }
         public bool Active { get; set; }
         public int CategoryId { get; set; }
+        public List<ProductPricesDTO>? ProductPrices { get; set; }
     }
 }

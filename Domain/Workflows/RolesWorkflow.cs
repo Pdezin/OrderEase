@@ -17,14 +17,14 @@ namespace Domain.Workflows
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<QueryResult<RoleResultDTO>> Get(string name, int page, int pageSize)
+        public async Task<QueryResult<RoleResultDTO>> Get(string term, int page, int pageSize)
         {
             var predicate = PredicateBuilder.New<Role>(true);
 
-            if (!string.IsNullOrWhiteSpace(name))
-                predicate = predicate.And(x => x.Name.Contains(name));
+            if (!string.IsNullOrWhiteSpace(term))
+                predicate = predicate.And(x => x.Name.Contains(term));
 
-            var query = await _unitOfWork.Roles.Query(predicate, page, pageSize, "Name");
+            var query = await _unitOfWork.Roles.Query(predicate, page, pageSize, nameof(Role.Name));
 
             var teste = Mapper.MapToListDTO<RoleResultDTO, Role>(query.Results);
 

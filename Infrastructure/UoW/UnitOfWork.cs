@@ -10,6 +10,8 @@ namespace Infrastructure.UoW
     {
         private readonly DataContext _context;
 
+        public DataContext Context { get => _context; }
+
         public UnitOfWork(DataContext context)
         {
             _context = context;

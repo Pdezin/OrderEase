@@ -1,5 +1,6 @@
 ﻿using Domain.DTOs.Categories;
 using Domain.DTOs.PriceLists;
+using Domain.DTOs.ProductPrices;
 using Domain.DTOs.Products;
 using Domain.DTOs.Roles;
 using Domain.DTOs.Use;
@@ -70,6 +71,29 @@ namespace Domain.Helpers
             };
         }
 
+        public static ProductPrice MapToEntity(this ProductPricesDTO m)
+        {
+            return new ProductPrice()
+            {
+                Price = m.Price,
+                PriceListId = m.PriceListId
+            };
+        }
+
+        public static List<ENTITY> MapToListEntity<ENTITY, DTO>(List<DTO>? m)
+        {
+            if (m != null)
+            {
+                var parameterTypes = new Type[] { typeof(ENTITY) };
+                var staticMethod = typeof(Mapper).GetMethod("MapToEntity", parameterTypes);
+
+                if (staticMethod != null)
+                    return m.Select(x => (ENTITY)staticMethod.Invoke(null, new object[] { x })).ToList();
+            }
+
+            return new List<ENTITY>();
+        }
+
         #endregion
 
         #region To DTO
@@ -111,7 +135,8 @@ namespace Domain.Helpers
             {
                 Id = m.Id,
                 Name = m.Name,
-                Active = m.Active
+                Active = m.Active,
+                Role = m.Role.MapToDTO()
             };
         }
 
@@ -123,9 +148,19 @@ namespace Domain.Helpers
                 Name = m.Name,
                 Stock = m.Stock,
                 Unit = m.Unit,
-                Category = m.Category.Name,
-                CategoryId = m.CategoryId,
-                Active = m.Active
+                Active = m.Active,
+                Category = m.Category.MapToDTO(),
+                ProductPrices = MapToListDTO<ProductPricesResultDTO, ProductPrice>(m.ProductPrices).ToList()
+            };
+        }
+
+        public static ProductPricesResultDTO MapToDTO(this ProductPrice m)
+        {
+            return new ProductPricesResultDTO()
+            {
+                Id = m.Id,
+                Price = m.Price,
+                PriceListId = m.PriceListId
             };
         }
 
@@ -136,7 +171,7 @@ namespace Domain.Helpers
 
             if (staticMethod != null)
                 return m.Select(x => (DTO)staticMethod.Invoke(null, new object[] { x }));
-
+            
             return Enumerable.Empty<DTO>();
         }
 
@@ -151,12 +186,11 @@ namespace Domain.Helpers
                 Id = m.Id,
                 Name = m.Name,
                 Email = m.Email,
-                RoleId = m.RoleId,
-                Role = m.Role.Name,
                 BirthDate = m.BirthDate?.ToStringDateTime() ?? "",
                 CreatedAt = m.CreatedAt.ToStringDateTime(),
                 UpdatedAt = m.UpdatedAt.ToStringDateTime(),
-                Active = m.Active
+                Active = m.Active,
+                Role = m.Role.MapToDTO()
             };
         }
 
@@ -173,11 +207,11 @@ namespace Domain.Helpers
                 Length = m.Length,
                 Weight = m.Weight,
                 Width = m.Width,
-                Category = m.Category.Name,
-                CategoryId = m.CategoryId,
                 CreatedAt = m.CreatedAt.ToStringDateTime(),
                 UpdatedAt = m.UpdatedAt.ToStringDateTime(),
-                Active = m.Active
+                Active = m.Active,
+                Category = m.Category.MapToDTO(),
+                ProductPrices = MapToListDTO<ProductPricesResultDTO, ProductPrice>(m.ProductPrices).ToList()
             };
         }
 

@@ -17,14 +17,14 @@ namespace Domain.Workflows
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<QueryResult<CategoryResultDTO>> Get(string name, int page, int pageSize)
+        public async Task<QueryResult<CategoryResultDTO>> Get(string term, int page, int pageSize)
         {
             var predicate = PredicateBuilder.New<Category>(true);
 
-            if (!string.IsNullOrWhiteSpace(name))
-                predicate = predicate.And(x => x.Name.Contains(name));
+            if (!string.IsNullOrWhiteSpace(term))
+                predicate = predicate.And(x => x.Name.Contains(term));
 
-            var query = await _unitOfWork.Categories.Query(predicate, page, pageSize, "Name");
+            var query = await _unitOfWork.Categories.Query(predicate, page, pageSize, nameof(Category.Name));
 
             return new QueryResult<CategoryResultDTO>()
             {

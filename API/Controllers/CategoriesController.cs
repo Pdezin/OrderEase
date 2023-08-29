@@ -17,11 +17,11 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string name = "",
+        public async Task<IActionResult> Get([FromQuery] string term = "",
                                              [FromQuery] int page = 0,
-                                             [FromQuery] int pageSize = 5)
+                                             [FromQuery] int pageSize = 10)
         {
-            var result = await _categoriesWorkflow.Get(name, page, pageSize);
+            var result = await _categoriesWorkflow.Get(term, page, pageSize);
 
             return Ok(result);
         }

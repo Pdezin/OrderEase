@@ -18,17 +18,17 @@ namespace Domain.Workflows
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<QueryResult<PriceListsResultDTO>> Get(string name, bool? active, int page, int pageSize)
+        public async Task<QueryResult<PriceListsResultDTO>> Get(string term, bool? active, int page, int pageSize)
         {
             var predicate = PredicateBuilder.New<PriceList>(true);
 
-            if (!string.IsNullOrWhiteSpace(name))
-                predicate = predicate.And(x => x.Name.Contains(name));
+            if (!string.IsNullOrWhiteSpace(term))
+                predicate = predicate.And(x => x.Name.Contains(term));
 
             if (active != null)
                 predicate = predicate.And(x => x.Active == active);
 
-            var query = await _unitOfWork.PriceLists.Query(predicate, page, pageSize, "Name");
+            var query = await _unitOfWork.PriceLists.Query(predicate, page, pageSize, nameof(PriceList.Name));
 
             return new QueryResult<PriceListsResultDTO>()
             {
